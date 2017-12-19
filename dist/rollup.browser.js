@@ -1,6 +1,6 @@
 /*
 	Rollup.js v0.52.3
-	Tue Dec 19 2017 14:16:06 GMT+0200 (South Africa Standard Time) - commit e6a1623a181a883db052db330104c9d1c4fac029
+	Tue Dec 19 2017 14:25:27 GMT+0200 (South Africa Standard Time) - commit 92d121a11111a413982164d3a8ba3aeeb3b23f4b
 
 
 	https://github.com/rollup/rollup
@@ -18162,130 +18162,133 @@ class Bundle$$1 {
 		 .then(addons => addons.filter(Boolean).join(sep));
 	}
 
-	build () {
+	link () {
 		// Phase 1 – discovery. We load the entry module and find which
 		// modules it imports, and import those, until we have all
 		// of the entry module's dependencies
 		return this.resolveId( this.entry, undefined )
-			.then( id => {
-				if ( id === false ) {
-					error( {
-						code: 'UNRESOLVED_ENTRY',
-						message: `Entry module cannot be external`
-					} );
+		.then( id => {
+			if ( id === false ) {
+				error( {
+					code: 'UNRESOLVED_ENTRY',
+					message: `Entry module cannot be external`
+				} );
+			}
+
+			if ( id == null ) {
+				error( {
+					code: 'UNRESOLVED_ENTRY',
+					message: `Could not resolve entry (${this.entry})`
+				} );
+			}
+
+			this.entryId = id;
+			return this.fetchModule( id, undefined );
+		} )
+		.then( entryModule => {
+
+			this.entryModule = entryModule;
+
+			// Phase 2 – binding. We link references to their variables
+			// to generate a complete picture of the bundle
+
+			timeStart( 'phase 2' );
+
+			this.modules.forEach( module => module.bindImportSpecifiers() );
+			this.modules.forEach( module => module.bindReferences() );
+
+			timeEnd( 'phase 2');
+		} );
+	}
+
+	build () {
+
+		// hook dynamic imports
+		return Promise.all( this.modules.map( module => module.processDynamicImports( this.resolveDynamicImport ) ) )
+
+		.then( () => {
+			// Phase 3 – marking. We include all statements that should be included
+
+			timeStart( 'phase 3' );
+
+			// mark all export statements
+			this.entryModule.getExports().forEach( name => {
+				const variable = this.entryModule.traceExport( name );
+
+				variable.exportName = name;
+				variable.includeVariable();
+
+				if ( variable.isNamespace ) {
+					variable.needsNamespaceBlock = true;
 				}
+			} );
 
-				if ( id == null ) {
-					error( {
-						code: 'UNRESOLVED_ENTRY',
-						message: `Could not resolve entry (${this.entry})`
-					} );
-				}
+			this.entryModule.getReexports().forEach( name => {
+				const variable = this.entryModule.traceExport( name );
 
-				this.entryId = id;
-				return this.fetchModule( id, undefined );
-			} )
-			.then( entryModule => {
-
-				this.entryModule = entryModule;
-
-				// Phase 2 – binding. We link references to their variables
-				// to generate a complete picture of the bundle
-
-				timeStart( 'phase 2' );
-
-				this.modules.forEach( module => module.bindImportSpecifiers() );
-				this.modules.forEach( module => module.bindReferences() );
-
-				// hook dynamic imports
-				return Promise.all( this.modules.map( module => module.processDynamicImports( this.resolveDynamicImport ) ) );
-			} )
-			.then( () => {
-
-				timeEnd( 'phase 2' );
-
-				// Phase 3 – marking. We include all statements that should be included
-
-				timeStart( 'phase 3' );
-
-				// mark all export statements
-				this.entryModule.getExports().forEach( name => {
-					const variable = this.entryModule.traceExport( name );
-
+				if ( variable.isExternal ) {
+					variable.reexported = variable.module.reexported = true;
+				} else {
 					variable.exportName = name;
 					variable.includeVariable();
-
-					if ( variable.isNamespace ) {
-						variable.needsNamespaceBlock = true;
-					}
-				} );
-
-				this.entryModule.getReexports().forEach( name => {
-					const variable = this.entryModule.traceExport( name );
-
-					if ( variable.isExternal ) {
-						variable.reexported = variable.module.reexported = true;
-					} else {
-						variable.exportName = name;
-						variable.includeVariable();
-					}
-				} );
-
-				// mark statements that should appear in the bundle
-				if ( this.treeshake ) {
-					let addedNewNodes;
-					do {
-						addedNewNodes = false;
-						this.modules.forEach( module => {
-							if ( module.includeInBundle() ) {
-								addedNewNodes = true;
-							}
-						} );
-					} while ( addedNewNodes );
-				} else {
-					// Necessary to properly replace namespace imports
-					this.modules.forEach( module => module.includeAllInBundle() );
 				}
-
-				timeEnd( 'phase 3' );
-
-				// Phase 4 – final preparation. We order the modules with an
-				// enhanced topological sort that accounts for cycles, then
-				// ensure that names are deconflicted throughout the bundle
-
-				timeStart( 'phase 4' );
-
-				// while we're here, check for unused external imports
-				this.externalModules.forEach( module => {
-					const unused = Object.keys( module.declarations )
-						.filter( name => name !== '*' )
-						.filter( name => !module.declarations[ name ].included && !module.declarations[ name ].reexported );
-
-					if ( unused.length === 0 ) { return; }
-
-					const names = unused.length === 1 ?
-						`'${unused[ 0 ]}' is` :
-						`${unused.slice( 0, -1 ).map( name => `'${name}'` ).join( ', ' )} and '${unused.slice( -1 )}' are`;
-
-					this.warn( {
-						code: 'UNUSED_EXTERNAL_IMPORT',
-						source: module.id,
-						names: unused,
-						message: `${names} imported from external module '${module.id}' but never used`
-					} );
-				} );
-
-				// prune unused external imports
-				this.externalModules = this.externalModules.filter( module => {
-					return module.used || !this.isPureExternalModule( module.id );
-				} );
-
-				this.orderedModules = this.sort();
-				this.deconflict();
-
-				timeEnd( 'phase 4' );
-
 			} );
+
+			// mark statements that should appear in the bundle
+			if ( this.treeshake ) {
+				let addedNewNodes;
+				do {
+					addedNewNodes = false;
+					this.modules.forEach( module => {
+						if ( module.includeInBundle() ) {
+							addedNewNodes = true;
+						}
+					} );
+				} while ( addedNewNodes );
+			} else {
+				// Necessary to properly replace namespace imports
+				this.modules.forEach( module => module.includeAllInBundle() );
+			}
+
+			timeEnd( 'phase 3' );
+
+			// Phase 4 – final preparation. We order the modules with an
+			// enhanced topological sort that accounts for cycles, then
+			// ensure that names are deconflicted throughout the bundle
+
+			timeStart( 'phase 4' );
+
+			// while we're here, check for unused external imports
+			this.externalModules.forEach( module => {
+				const unused = Object.keys( module.declarations )
+					.filter( name => name !== '*' )
+					.filter( name => !module.declarations[ name ].included && !module.declarations[ name ].reexported );
+
+				if ( unused.length === 0 ) { return; }
+
+				const names = unused.length === 1 ?
+					`'${unused[ 0 ]}' is` :
+					`${unused.slice( 0, -1 ).map( name => `'${name}'` ).join( ', ' )} and '${unused.slice( -1 )}' are`;
+
+				this.warn( {
+					code: 'UNUSED_EXTERNAL_IMPORT',
+					source: module.id,
+					names: unused,
+					message: `${names} imported from external module '${module.id}' but never used`
+				} );
+			} );
+
+			// prune unused external imports
+			this.externalModules = this.externalModules.filter( module => {
+				return module.used || !this.isPureExternalModule( module.id );
+			} );
+
+			this.orderedModules = this.sort();
+			this.deconflict();
+
+			timeEnd( 'phase 4' );
+
+		} );
 	}
 
 	deconflict () {
@@ -18851,7 +18854,10 @@ function rollup ( inputOptions ) {
 
 		timeStart( '--BUILD--' );
 
-		return bundle.build().then( () => {
+		return bundle.link().then( () => {
+			return bundle.build();
+		} ).then( () => {
+			
 			timeEnd( '--BUILD--' );
 
 			function generate ( outputOptions ) {
