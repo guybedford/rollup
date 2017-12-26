@@ -191,8 +191,8 @@ export class NodeBase implements Node {
 		return location;
 	}
 
-	render (code: MagicString, es: boolean) {
-		this.eachChild(child => child.render(code, es));
+	render (code: MagicString) {
+		this.eachChild(child => child.render(code));
 	}
 
 	shouldBeIncluded () {
