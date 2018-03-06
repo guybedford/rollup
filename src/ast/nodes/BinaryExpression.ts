@@ -60,6 +60,11 @@ export default class BinaryExpression extends NodeBase {
 	right: ExpressionNode;
 	operator: BinaryOperator;
 
+	eachChild(callback: (node: ExpressionNode) => void): void {
+		callback(this.left);
+		callback(this.right);
+	}
+
 	getValue(): any {
 		const leftValue = this.left.getValue();
 		if (leftValue === UNKNOWN_VALUE) return UNKNOWN_VALUE;

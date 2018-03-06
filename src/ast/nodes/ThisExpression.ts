@@ -1,7 +1,7 @@
 import ThisVariable from '../variables/ThisVariable';
 import ExecutionPathOptions from '../ExecutionPathOptions';
 import MagicString from 'magic-string';
-import { NodeBase } from './shared/Node';
+import { NodeBase, Node } from './shared/Node';
 import { NodeType } from './NodeType';
 import { RenderOptions } from '../../utils/renderHelpers';
 import { ObjectPath } from '../values';
@@ -11,6 +11,8 @@ export default class ThisExpression extends NodeBase {
 	variable: ThisVariable;
 
 	alias: string;
+
+	eachChild(_callback: (node: Node) => void): void {}
 
 	initialiseNode() {
 		const lexicalBoundary = this.scope.findLexicalBoundary();

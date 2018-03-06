@@ -11,6 +11,12 @@ export default class ClassNode extends NodeBase {
 	superClass: ExpressionNode | null;
 	id: Identifier | null;
 
+	eachChild(callback: (node: Identifier | ExpressionNode | ClassBody) => void): void {
+		if (this.id) callback(this.id);
+		if (this.superClass) callback(this.superClass);
+		callback(this.body);
+	}
+
 	hasEffectsWhenAccessedAtPath(path: ObjectPath, _options: ExecutionPathOptions) {
 		return path.length > 1;
 	}

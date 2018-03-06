@@ -7,7 +7,7 @@ import {
 	SomeReturnExpressionCallback
 } from './shared/Expression';
 import { NodeType } from './NodeType';
-import { ExpressionNode, NodeBase } from './shared/Node';
+import { ExpressionNode, NodeBase, Node } from './shared/Node';
 
 export type LogicalOperator = '||' | '&&';
 
@@ -16,6 +16,11 @@ export default class LogicalExpression extends NodeBase {
 	operator: LogicalOperator;
 	left: ExpressionNode;
 	right: ExpressionNode;
+
+	eachChild(callback: (node: Node) => void): void {
+		callback(this.left);
+		callback(this.right);
+	}
 
 	reassignPath(path: ObjectPath, options: ExecutionPathOptions) {
 		path.length > 0 && this._forEachRelevantBranch(node => node.reassignPath(path, options));

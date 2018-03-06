@@ -16,6 +16,16 @@ export default class ExportNamedDeclaration extends NodeBase {
 	specifiers: ExportSpecifier[];
 	source: Literal<string> | null;
 
+	eachChild(callback: (node: Node) => void): void {
+		if (this.declaration) callback(this.declaration);
+		if (this.specifiers) {
+			for (let i = 0; i < this.specifiers.length; i++) {
+				callback(this.specifiers[i]);
+			}
+		}
+		if (this.source) callback(this.source);
+	}
+
 	needsBoundaries: true;
 	isExportDeclaration: true;
 

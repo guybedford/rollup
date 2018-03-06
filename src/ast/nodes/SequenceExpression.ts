@@ -8,6 +8,10 @@ export default class SequenceExpression extends NodeBase {
 	type: NodeType.SequenceExpression;
 	expressions: ExpressionNode[];
 
+	eachChild(callback: (node: ExpressionNode) => void): void {
+		for (let i = 0; i < this.expressions.length; i++) callback(this.expressions[i]);
+	}
+
 	getValue(): any {
 		return this.expressions[this.expressions.length - 1].getValue();
 	}

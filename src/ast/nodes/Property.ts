@@ -27,6 +27,11 @@ export default class Property extends NodeBase {
 
 	private _accessorCallOptions: CallOptions;
 
+	eachChild(callback: (node: Node) => void): void {
+		callback(this.key);
+		callback(this.value);
+	}
+
 	reassignPath(path: ObjectPath, options: ExecutionPathOptions) {
 		if (this.kind === 'get') {
 			path.length > 0 &&

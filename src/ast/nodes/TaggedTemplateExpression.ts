@@ -14,6 +14,11 @@ export default class TaggedTemplateExpression extends NodeBase {
 
 	private _callOptions: CallOptions;
 
+	eachChild(callback: (node: ExpressionNode | TemplateLiteral) => void): void {
+		callback(this.tag);
+		callback(this.quasi);
+	}
+
 	bindNode() {
 		if (this.tag.type === NodeType.Identifier) {
 			const variable = this.scope.findVariable((<Identifier>this.tag).name);

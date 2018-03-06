@@ -15,6 +15,12 @@ export default class FunctionNode extends NodeBase {
 	scope: BlockScope;
 	params: PatternNode[];
 
+	eachChild(callback: (node: Identifier | BlockStatement | PatternNode) => void): void {
+		if (this.id) callback(this.id);
+		for (let i = 0; i < this.params.length; i++) callback(this.params[i]);
+		callback(this.body);
+	}
+
 	bindNode() {
 		this.body.bindImplicitReturnExpressionToScope();
 	}

@@ -31,6 +31,10 @@ export default class VariableDeclaration extends NodeBase {
 	declarations: VariableDeclarator[];
 	kind: 'var' | 'let' | 'const';
 
+	eachChild(callback: (node: Node) => void): void {
+		for (let i = 0; i < this.declarations.length; i++) callback(this.declarations[i]);
+	}
+
 	reassignPath(_path: ObjectPath, _options: ExecutionPathOptions) {
 		this.declarations.forEach(declarator =>
 			declarator.reassignPath([], ExecutionPathOptions.create())

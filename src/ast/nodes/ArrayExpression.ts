@@ -15,6 +15,13 @@ export default class ArrayExpression extends NodeBase {
 	type: NodeType.ArrayExpression;
 	elements: (ExpressionNode | SpreadElement | null)[];
 
+	eachChild(callback: (node: ExpressionNode | SpreadElement) => void): void {
+		for (let i = 0; i < this.elements.length; i++) {
+			const el = this.elements[i];
+			if (el) callback(el);
+		}
+	}
+
 	hasEffectsWhenAccessedAtPath(path: ObjectPath) {
 		return path.length > 1;
 	}

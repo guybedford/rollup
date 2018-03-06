@@ -11,6 +11,10 @@ export default class ExportAllDeclaration extends NodeBase {
 	isExportDeclaration: true;
 	needsBoundaries: true;
 
+	eachChild(callback: (node: Literal<string>) => void): void {
+		callback(this.source);
+	}
+
 	render(code: MagicString, _options: RenderOptions, { start, end }: NodeRenderOptions = BLANK) {
 		code.remove(start, end);
 	}

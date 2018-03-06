@@ -18,6 +18,13 @@ export default class ForStatement extends StatementBase {
 	update: ExpressionNode | null;
 	body: StatementNode;
 
+	eachChild(callback: (node: Node) => void): void {
+		if (this.init) callback(this.init);
+		if (this.test) callback(this.test);
+		if (this.update) callback(this.update);
+		callback(this.body);
+	}
+
 	hasEffects(options: ExecutionPathOptions): boolean {
 		return (
 			(this.init && this.init.hasEffects(options)) ||

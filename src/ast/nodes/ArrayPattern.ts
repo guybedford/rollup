@@ -10,6 +10,13 @@ export default class ArrayPattern extends NodeBase implements PatternNode {
 	type: NodeType.ArrayPattern;
 	elements: (PatternNode | null)[];
 
+	eachChild(callback: (node: PatternNode) => void): void {
+		for (let i = 0; i < this.elements.length; i++) {
+			const el = this.elements[i];
+			if (el) callback(el);
+		}
+	}
+
 	reassignPath(path: ObjectPath, options: ExecutionPathOptions) {
 		path.length === 0 && this.elements.forEach(child => child && child.reassignPath([], options));
 	}

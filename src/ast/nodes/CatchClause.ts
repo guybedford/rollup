@@ -11,6 +11,11 @@ export default class CatchClause extends NodeBase {
 	body: BlockStatement;
 	scope: CatchScope;
 
+	eachChild(callback: (node: PatternNode | BlockStatement) => void): void {
+		callback(this.param);
+		callback(this.body);
+	}
+
 	initialiseChildren() {
 		this.param && this.param.initialiseAndDeclare(this.scope, 'parameter', null);
 		this.body.initialiseAndReplaceScope(this.scope);

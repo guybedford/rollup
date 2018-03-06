@@ -11,6 +11,11 @@ export default class NewExpression extends NodeBase {
 
 	_callOptions: CallOptions;
 
+	eachChild(callback: (node: ExpressionNode) => void): void {
+		callback(this.callee);
+		for (let i = 0; i < this.arguments.length; i++) callback(this.arguments[i]);
+	}
+
 	hasEffects(options: ExecutionPathOptions): boolean {
 		return (
 			this.arguments.some(child => child.hasEffects(options)) ||

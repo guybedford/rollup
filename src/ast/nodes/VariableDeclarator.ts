@@ -10,6 +10,11 @@ export default class VariableDeclarator extends NodeBase {
 	id: PatternNode;
 	init: ExpressionNode | null;
 
+	eachChild(callback: (node: PatternNode | ExpressionNode) => void): void {
+		callback(this.id);
+		if (this.init) callback(this.init);
+	}
+
 	reassignPath(path: ObjectPath, options: ExecutionPathOptions) {
 		this.id.reassignPath(path, options);
 	}

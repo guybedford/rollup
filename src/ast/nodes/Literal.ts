@@ -29,6 +29,8 @@ export default class Literal<T = LiteralValueTypes> extends NodeBase {
 		return this.value;
 	}
 
+	eachChild(_callback: (node: Node) => void): void {}
+
 	hasEffectsWhenAccessedAtPath(path: ObjectPath, _options: ExecutionPathOptions) {
 		if (this.value === null) {
 			return path.length > 0;

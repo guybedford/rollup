@@ -13,6 +13,11 @@ export default class TemplateLiteral extends NodeBase {
 	quasis: TemplateElement[];
 	expressions: ExpressionNode[];
 
+	eachChild(callback: (node: Node) => void): void {
+		for (let i = 0; i < this.quasis.length; i++) callback(this.quasis[i]);
+		for (let i = 0; i < this.expressions.length; i++) callback(this.expressions[i]);
+	}
+
 	render(code: MagicString, options: RenderOptions) {
 		(<any>code).indentExclusionRanges.push([this.start, this.end]); // TODO TypeScript: Awaiting PR
 		super.render(code, options);

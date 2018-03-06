@@ -19,6 +19,12 @@ export default class ForOfStatement extends StatementBase {
 	right: ExpressionNode;
 	body: StatementNode;
 
+	eachChild(callback: (node: Node) => void): void {
+		callback(this.left);
+		callback(this.right);
+		callback(this.body);
+	}
+
 	bindNode() {
 		this.left.reassignPath([], ExecutionPathOptions.create());
 	}

@@ -68,6 +68,11 @@ export default class MemberExpression extends NodeBase {
 	private replacement: string;
 	private arePropertyReadSideEffectsChecked: boolean;
 
+	eachChild(callback: (node: ExpressionNode) => void): void {
+		callback(this.object);
+		callback(this.property);
+	}
+
 	bind() {
 		const path = getPathIfNotComputed(this);
 		const baseVariable = path && this.scope.findVariable(path[0].key);

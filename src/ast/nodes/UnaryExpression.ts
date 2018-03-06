@@ -23,6 +23,10 @@ export default class UnaryExpression extends NodeBase {
 
 	value: any;
 
+	eachChild(callback: (node: ExpressionNode) => void): void {
+		callback(this.argument);
+	}
+
 	bindNode() {
 		if (this.operator === 'delete') {
 			this.argument.reassignPath([], ExecutionPathOptions.create());

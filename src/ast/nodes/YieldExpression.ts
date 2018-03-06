@@ -7,6 +7,10 @@ export default class YieldExpression extends NodeBase {
 	argument: ExpressionNode | null;
 	delegate: boolean;
 
+	eachChild(callback: (node: ExpressionNode) => void): void {
+		if (this.argument) callback(this.argument);
+	}
+
 	hasEffects(options: ExecutionPathOptions) {
 		return super.hasEffects(options) || !options.ignoreReturnAwaitYield();
 	}

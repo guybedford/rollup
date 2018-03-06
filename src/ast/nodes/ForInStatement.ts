@@ -19,6 +19,12 @@ export default class ForInStatement extends StatementBase {
 	right: ExpressionNode;
 	body: StatementNode;
 
+	eachChild(callback: (node: Node) => void): void {
+		callback(this.left);
+		callback(this.right);
+		callback(this.body);
+	}
+
 	hasEffects(options: ExecutionPathOptions): boolean {
 		return (
 			(this.left &&

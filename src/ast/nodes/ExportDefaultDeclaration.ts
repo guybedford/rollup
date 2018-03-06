@@ -39,6 +39,12 @@ export default class ExportDefaultDeclaration extends NodeBase {
 	type: NodeType.ExportDefaultDeclaration;
 	declaration: FunctionDeclaration | ClassDeclaration | ExpressionNode;
 
+	eachChild(
+		callback: (node: FunctionDeclaration | ClassDeclaration | ExpressionNode) => void
+	): void {
+		callback(this.declaration);
+	}
+
 	needsBoundaries: true;
 	isExportDeclaration: true;
 	variable: ExportDefaultVariable;

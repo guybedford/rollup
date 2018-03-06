@@ -12,6 +12,11 @@ export default class SwitchCase extends NodeBase {
 	test: ExpressionNode | null;
 	consequent: StatementNode[];
 
+	eachChild(callback: (node: ExpressionNode | StatementNode) => void): void {
+		if (this.test) callback(this.test);
+		for (let i = 0; i < this.consequent.length; i++) callback(this.consequent[i]);
+	}
+
 	includeInBundle() {
 		let addedNewNodes = !this.included;
 		this.included = true;

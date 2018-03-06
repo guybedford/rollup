@@ -15,6 +15,11 @@ export default class ArrowFunctionExpression extends NodeBase {
 	params: PatternNode[];
 	scope: ReturnValueScope;
 
+	eachChild(callback: (node: PatternNode | BlockStatement | ExpressionNode) => void): void {
+		for (let i = 0; i < this.params.length; i++) callback(this.params[i]);
+		callback(this.body);
+	}
+
 	bindNode() {
 		isBlockStatement(this.body)
 			? this.body.bindImplicitReturnExpressionToScope()

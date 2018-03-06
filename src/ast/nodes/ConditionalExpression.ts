@@ -11,10 +11,16 @@ import { RenderOptions } from '../../utils/renderHelpers';
 export default class ConditionalExpression extends NodeBase {
 	type: NodeType.ConditionalExpression;
 	test: ExpressionNode;
-	alternate: ExpressionNode;
-	consequent: ExpressionNode;
+	alternate: ExpressionNode | null;
+	consequent: ExpressionNode | null;
 
 	testValue: any;
+
+	eachChild(callback: (node: ExpressionNode) => void): void {
+		callback(this.test);
+		if (this.consequent) callback(this.consequent);
+		if (this.alternate) callback(this.alternate);
+	}
 
 	reassignPath(path: ObjectPath, options: ExecutionPathOptions) {
 		path.length > 0 && this.forEachRelevantBranch(node => node.reassignPath(path, options));

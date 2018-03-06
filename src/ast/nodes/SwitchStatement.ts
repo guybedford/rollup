@@ -10,6 +10,11 @@ export default class SwitchStatement extends StatementBase {
 	discriminant: ExpressionNode;
 	cases: SwitchCase[];
 
+	eachChild(callback: (node: ExpressionNode | SwitchCase) => void): void {
+		callback(this.discriminant);
+		for (let i = 0; i < this.cases.length; i++) callback(this.cases[i]);
+	}
+
 	hasEffects(options: ExecutionPathOptions) {
 		return super.hasEffects(options.setIgnoreBreakStatements());
 	}

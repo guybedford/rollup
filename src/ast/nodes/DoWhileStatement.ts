@@ -7,6 +7,11 @@ export default class DoWhileStatement extends StatementBase {
 	body: StatementNode;
 	test: ExpressionNode;
 
+	eachChild(callback: (node: StatementNode | ExpressionNode) => void): void {
+		callback(this.test);
+		callback(this.body);
+	}
+
 	hasEffects(options: ExecutionPathOptions): boolean {
 		return (
 			this.test.hasEffects(options) || this.body.hasEffects(options.setIgnoreBreakStatements())

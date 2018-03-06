@@ -1,4 +1,4 @@
-import { ExpressionNode, NodeBase } from './shared/Node';
+import { ExpressionNode, NodeBase, Node } from './shared/Node';
 import ExecutionPathOptions from '../ExecutionPathOptions';
 import FunctionExpression from './FunctionExpression';
 import CallOptions from '../CallOptions';
@@ -12,6 +12,11 @@ export default class MethodDefinition extends NodeBase {
 	kind: 'constructor' | 'method' | 'get' | 'set';
 	computed: boolean;
 	static: boolean;
+
+	eachChild(callback: (node: Node) => void): void {
+		callback(this.key);
+		callback(this.value);
+	}
 
 	hasEffects(options: ExecutionPathOptions) {
 		return this.key.hasEffects(options);

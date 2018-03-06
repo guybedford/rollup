@@ -29,6 +29,8 @@ export default class Identifier extends NodeBase {
 	variable: Variable;
 	private isBound: boolean;
 
+	eachChild(_callback: (node: Node) => void): void {}
+
 	bindNode() {
 		if (isReference(this, this.parent)) {
 			this.variable = this.scope.findVariable(this.name);

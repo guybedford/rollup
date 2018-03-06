@@ -10,6 +10,10 @@ export default class RestElement extends NodeBase implements PatternNode {
 	type: NodeType.RestElement;
 	argument: PatternNode;
 
+	eachChild(callback: (node: PatternNode) => void): void {
+		callback(this.argument);
+	}
+
 	reassignPath(path: ObjectPath, options: ExecutionPathOptions) {
 		path.length === 0 && this.argument.reassignPath([], options);
 	}

@@ -10,6 +10,10 @@ export default class ClassBody extends NodeBase {
 	body: MethodDefinition[];
 	classConstructor: MethodDefinition | null;
 
+	eachChild(callback: (node: MethodDefinition) => void): void {
+		for (let i = 0; i < this.body.length; i++) callback(this.body[i]);
+	}
+
 	hasEffectsWhenCalledAtPath(
 		path: ObjectPath,
 		callOptions: CallOptions,

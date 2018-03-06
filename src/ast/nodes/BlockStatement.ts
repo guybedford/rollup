@@ -16,6 +16,10 @@ export default class BlockStatement extends StatementBase {
 	scope: Scope;
 	body: StatementNode[];
 
+	eachChild(callback: (node: StatementNode) => void): void {
+		for (let i = 0; i < this.body.length; i++) callback(this.body[i]);
+	}
+
 	bindImplicitReturnExpressionToScope() {
 		const lastStatement = this.body[this.body.length - 1];
 		if (!lastStatement || lastStatement.type !== NodeType.ReturnStatement) {

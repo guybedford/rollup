@@ -10,6 +10,10 @@ export default class UpdateExpression extends NodeBase {
 	argument: ExpressionNode;
 	prefix: boolean;
 
+	eachChild(callback: (node: ExpressionNode) => void): void {
+		callback(this.argument);
+	}
+
 	bindNode() {
 		this.argument.reassignPath([], ExecutionPathOptions.create());
 		if (isIdentifier(this.argument)) {

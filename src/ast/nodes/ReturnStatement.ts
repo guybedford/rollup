@@ -7,6 +7,10 @@ export default class ReturnStatement extends StatementBase {
 	type: NodeType.ReturnStatement;
 	argument: ExpressionNode | null;
 
+	eachChild(callback: (node: ExpressionNode) => void): void {
+		if (this.argument) callback(this.argument);
+	}
+
 	hasEffects(options: ExecutionPathOptions) {
 		return super.hasEffects(options) || !options.ignoreReturnAwaitYield();
 	}

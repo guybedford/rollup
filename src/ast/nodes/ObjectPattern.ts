@@ -11,6 +11,10 @@ export default class ObjectPattern extends NodeBase implements PatternNode {
 	type: NodeType.ObjectPattern;
 	properties: AssignmentProperty[];
 
+	eachChild(callback: (node: AssignmentProperty) => void): void {
+		for (let i = 0; i < this.properties.length; i++) callback(this.properties[i]);
+	}
+
 	reassignPath(path: ObjectPath, options: ExecutionPathOptions) {
 		path.length === 0 && this.properties.forEach(child => child.reassignPath(path, options));
 	}

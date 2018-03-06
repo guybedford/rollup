@@ -1,6 +1,6 @@
 import CallExpression from './CallExpression';
 import { NodeType } from './NodeType';
-import { NodeBase } from './shared/Node';
+import { NodeBase, Node } from './shared/Node';
 import MagicString from 'magic-string';
 import NamespaceVariable from '../variables/NamespaceVariable';
 import { RenderOptions } from '../../utils/renderHelpers';
@@ -11,6 +11,8 @@ export default class Import extends NodeBase {
 
 	private resolution: NamespaceVariable | string | void;
 	private resolutionInterop: boolean;
+
+	eachChild(_callback: (node: Node) => void): void {}
 
 	setResolution(resolution: NamespaceVariable | string | void, interop: boolean): void {
 		this.resolution = resolution;

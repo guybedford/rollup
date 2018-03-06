@@ -43,11 +43,17 @@ function getHoistedVars(node: StatementNode, scope: Scope) {
 export default class IfStatement extends StatementBase {
 	type: NodeType.IfStatement;
 	test: ExpressionNode;
-	consequent: StatementNode;
+	consequent: StatementNode | null;
 	alternate: StatementNode | null;
 
 	private testValue: any;
 	private hoistedVars?: string[];
+
+	eachChild(callback: (node: Node) => void): void {
+		callback(this.test);
+		if (this.consequent) callback(this.consequent);
+		if (this.alternate) callback(this.alternate);
+	}
 
 	initialiseChildren(parentScope: Scope) {
 		super.initialiseChildren(parentScope);

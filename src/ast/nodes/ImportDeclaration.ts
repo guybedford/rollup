@@ -1,4 +1,4 @@
-import { NodeBase } from './shared/Node';
+import { NodeBase, Node } from './shared/Node';
 import Literal from './Literal';
 import ImportSpecifier from './ImportSpecifier';
 import ImportDefaultSpecifier from './ImportDefaultSpecifier';
@@ -15,6 +15,11 @@ export default class ImportDeclaration extends NodeBase {
 
 	isImportDeclaration: true;
 	needsBoundaries: true;
+
+	eachChild(callback: (node: Node) => void): void {
+		for (let i = 0; i < this.specifiers.length; i++) callback(this.specifiers[i]);
+		callback(this.source);
+	}
 
 	bindChildren() {}
 

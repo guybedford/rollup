@@ -16,6 +16,11 @@ export default class CallExpression extends NodeBase {
 
 	private _callOptions: CallOptions;
 
+	eachChild(callback: (node: ExpressionNode | SpreadElement) => void): void {
+		callback(this.callee);
+		for (let i = 0; i < this.arguments.length; i++) callback(this.arguments[i]);
+	}
+
 	reassignPath(path: ObjectPath, options: ExecutionPathOptions) {
 		!options.hasReturnExpressionBeenAssignedAtPath(path, this) &&
 			this.callee.forEachReturnExpressionWhenCalledAtPath(

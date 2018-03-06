@@ -18,6 +18,10 @@ export default class ObjectExpression extends NodeBase {
 	type: NodeType.ObjectExpression;
 	properties: Property[];
 
+	eachChild(callback: (node: Property) => void): void {
+		for (let i = 0; i < this.properties.length; i++) callback(this.properties[i]);
+	}
+
 	reassignPath(path: ObjectPath, options: ExecutionPathOptions) {
 		if (path.length === 0) return;
 
