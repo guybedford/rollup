@@ -141,6 +141,8 @@ export default class Module {
 	dynamicImports: Import[];
 	dynamicImportResolutions: (Module | ExternalModule | string | void)[];
 
+	private traceCache: { [name: string]: Variable };
+
 	execIndex: number;
 	isEntryPoint: boolean;
 	entryPointsHash: Uint8Array;
@@ -188,6 +190,8 @@ export default class Module {
 
 		this.declarations = blank();
 		this.scope = new ModuleScope(this);
+
+		this.traceCache = {};
 	}
 
 	setSource({
@@ -655,14 +659,17 @@ export default class Module {
 	}
 
 	traceExport(name: string): Variable {
+		const cached = this.traceCache[name];
+		if (cached) return cached;
+
 		if (name[0] === '*') {
 			// namespace
 			if (name.length === 1) {
-				return this.namespace();
+				return (this.traceCache[name] = this.namespace());
 				// export * from 'external'
 			} else {
 				const module = <ExternalModule>this.graph.moduleById.get(name.slice(1));
-				return module.traceExport('*');
+				return (this.traceCache[name] = module.traceExport('*'));
 			}
 		}
 
@@ -680,7 +687,7 @@ export default class Module {
 				);
 			}
 
-			return declaration;
+			return (this.traceCache[name] = declaration);
 		}
 
 		const exportDeclaration = this.exports[name];
@@ -688,7 +695,7 @@ export default class Module {
 			const name = exportDeclaration.localName;
 			const declaration = this.trace(name);
 
-			return declaration || this.graph.scope.findVariable(name);
+			return (this.traceCache[name] = declaration || this.graph.scope.findVariable(name));
 		}
 
 		if (name === 'default') return;
@@ -697,7 +704,7 @@ export default class Module {
 			const module = this.exportAllModules[i];
 			const declaration = module.traceExport(name);
 
-			if (declaration) return declaration;
+			if (declaration) return (this.traceCache[name] = declaration);
 		}
 	}
 
